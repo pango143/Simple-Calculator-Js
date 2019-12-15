@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Javascript/Html Calculator</title>
+</head>
+<style>
+
+    #calculator {
+        width: 45%;
+    }
+
+    #display-input {
+        background-color: #eee;
+        padding: 12px;
+    }
+
+    #number-inputs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .calcProperty {
+        text-align: center;
+        background-color: lightblue;
+        padding: 25px;
+        border: 1px solid gray;
+        cursor: pointer;
+    }
+
+</style>
+<body>
+
+    <div id="calculator">
+        <div id="error-message">
+            
+        </div>
+        <input type="text" id="display-input" readonly/>
+        <hr />
+        <div id="number-inputs">
+            <div id="all-clear" class="calcProperty utility" data-value="all-clear">AC</div>
+            <div id="clear" class="calcProperty utility" data-value="clear">c</div>    
+            <div class="calcProperty input" data-value="0">0</div>
+            <div class="calcProperty input" data-value="1">1</div>
+            <div class="calcProperty input" data-value="2">2</div>
+            <div class="calcProperty input" data-value="3">3</div>
+            <div class="calcProperty input" data-value="4">4</div>
+            <div class="calcProperty input" data-value="5">5</div>
+            <div class="calcProperty input" data-value="6">6</div>
+            <div class="calcProperty input" data-value="7">7</div>
+            <div class="calcProperty input" data-value="8">8</div>
+            <div class="calcProperty input" data-value="9">9</div>
+            <div class="calcProperty input operator" data-value="*">*</div>
+            <div class="calcProperty input operator" data-value="-">-</div>
+            <div class="calcProperty input operator" data-value="+">+</div>
+            <div id="equals" class="calcProperty" data-value="=">=</div>
+        </div>
+    </div>
+
+
+    <script>
+    
+        "use strict";
+
+        var $displayedInput = document.getElementById('display-input');
+        var $allClear = document.getElementById('all-clear');
+        var $clear = document.getElementById('clear');
+        var $inputs = document.getElementsByClassName('input');
+        var $equals = document.getElementById('equals');
+        var $errorMessage = document.getElementById('error-message');
+        var resetFlag = false;
+        var operatorFlag = false;
+
+        $inputs = Array.prototype.slice.call($inputs);
+
+        // Events initialization
+
+        $inputs.forEach(number => {
+            number.addEventListener('click', function(e) {
+                e.preventDefault();
+                var value = getValueFromInput(this);
+
+                if (isOperator(this) && operatorFlag) {
+                    return;
+                }
+
+                if (isOperator(this)) {
+                    operatorFlag = true;
+                } else {
+                    operatorFlag = false;
+                }
+
+                if (resetFlag) {
+                    clearAll();
+                    resetFlag = false;
+                    operatorFlag = false;
+                }
+                updateDisplay(value);
+            });
+        });
+
+        $equals.addEventListener('click', function(e) {
+            e.preventDefault();
+            equals();
+        });
+
+        $allClear.addEventListener('click', function(e) {
+            e.preventDefault();
+            clearAll();
+        });
+
+        $clear.addEventListener('click', function(e) {
+            e.preventDefault();
+            clear($displayedInput.value.length - 1);
+        });
+
+        // End of event's
+
+        function isOperator(element) {
+            return element.classList.contains('operator');
+        }
+
+        function getValueFromInput(input) {
+            return input.getAttribute('data-value');
+        }
+
+        function updateDisplay(params) {
+            $displayedInput.value += params;
+        }
+
+        function equals() {
+            try {
+                $displayedInput.value = eval($displayedInput.value);
+                resetFlag = true;
+            } catch (e) {
+                var message = document.createElement('p');
+
+            }
+        }
+
+        function clearAll() {
+            clear(0);
+        }
+
+        function clear(start) {
+            var inputAsArray = $displayedInput.value.split('');
+            inputAsArray.splice(start);
+            $displayedInput.value = inputAsArray.join('');
+        }
+
+    </script>
+
+</body>
+</html>
