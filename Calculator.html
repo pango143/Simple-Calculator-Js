@@ -5,8 +5,17 @@
 </head>
 <style>
 
+    * {
+        box-sizing: border-box;
+    }
+
     #calculator {
-        width: 45%;
+        width: 25%;
+        margin: 0 auto;
+        -webkit-box-shadow: -4px 6px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: -4px 6px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: -4px 6px 5px 0px rgba(0,0,0,0.75);
+        padding: 8px;
     }
 
     #display-input {
@@ -22,7 +31,7 @@
     .calcProperty {
         text-align: center;
         background-color: lightblue;
-        padding: 25px;
+        padding: 12px;
         border: 1px solid gray;
         cursor: pointer;
     }
@@ -31,10 +40,7 @@
 <body>
 
     <div id="calculator">
-        <div id="error-message">
-            
-        </div>
-        <input type="text" id="display-input" readonly/>
+        <input style="width:100%;" type="text" id="display-input" readonly/>
         <hr />
         <div id="number-inputs">
             <div id="all-clear" class="calcProperty utility" data-value="all-clear">AC</div>
@@ -69,7 +75,7 @@
         var $errorMessage = document.getElementById('error-message');
         var resetFlag = false;
         var operatorFlag = false;
-
+        
         $inputs = Array.prototype.slice.call($inputs);
 
         // Events initialization
@@ -78,22 +84,7 @@
             number.addEventListener('click', function(e) {
                 e.preventDefault();
                 var value = getValueFromInput(this);
-
-                if (isOperator(this) && operatorFlag) {
-                    return;
-                }
-
-                if (isOperator(this)) {
-                    operatorFlag = true;
-                } else {
-                    operatorFlag = false;
-                }
-
-                if (resetFlag) {
-                    clearAll();
-                    resetFlag = false;
-                    operatorFlag = false;
-                }
+                validateInput(this);
                 updateDisplay(value);
             });
         });
@@ -115,6 +106,20 @@
 
         // End of event's
 
+        // private methods
+        function validateInput(input) {
+            if (isOperator(input)) {
+                if (operatorFlag) {
+                    return;
+                } else {
+                    operatorFlag = true;
+                }
+                resetFlag = false;
+            } else {
+                operatorFlag = false;
+            }
+        }
+
         function isOperator(element) {
             return element.classList.contains('operator');
         }
@@ -124,6 +129,10 @@
         }
 
         function updateDisplay(params) {
+            if (resetFlag && !operatorFlag) {
+                $displayedInput.value = '';
+            }
+
             $displayedInput.value += params;
         }
 
@@ -138,6 +147,8 @@
         }
 
         function clearAll() {
+            resetFlag = false;
+            operatorFlag = false;
             clear(0);
         }
 
